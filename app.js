@@ -13,8 +13,23 @@ var tmpl = ' <li id="ID">' +
            '  <h3>SENTENCE</h3>' +
            ' </li> ';
 
+
+// first solution
 $(document).ready(function(){
-    Lingo.start($(".sentences"),$(".form-control"),$(".opt-continue"),$(".practice"),$(".final"),data);
+    $(".english").on("click",function(){
+            $(".practice").removeClass("hidden");
+            Lingo.translationType = 0;
+            $(".languageSelection").addClass("hidden");
+            Lingo.start($(".sentences"),$(".form-control"),$(".opt-continue"),$(".practice"),$(".final"),$(".languageSelection"),data);
+        });
+        
+    $(".german").on("click",function(){
+            $(".practice").removeClass("hidden");
+            Lingo.translationType = 1;
+            $(".languageSelection").addClass("hidden");
+            Lingo.start($(".sentences"),$(".form-control"),$(".opt-continue"),$(".practice"),$(".final"),$(".languageSelection"),data);
+    });
+    
   
 });
 
@@ -24,14 +39,20 @@ var Lingo = {
     correct : 0,
     practice : {},
     final : {},
-    start : function(ul, textField, button, practice,final,data){
+    translationType : 0,
+    start : function(ul, textField, button, practice,final,languageSelection,data){
         var id = 0;
         Lingo.current = 0;
         Lingo.correct = 0;
         Lingo.practice = practice;
         Lingo.final = final;
+        
         data.forEach(function(element){
-            var sentence = tmpl.replace("SENTENCE",element.phrase_en).replace("ID",id);
+            var sentence;
+            if(Lingo.translationType==0)
+                sentence = tmpl.replace("SENTENCE",element.phrase_en).replace("ID",id);
+            else 
+                sentence = tmpl.replace("SENTENCE",element.phrase_de).replace("ID",id);
             id++;
             $(ul).append(sentence);
         });
@@ -39,8 +60,14 @@ var Lingo = {
         Lingo.data = data;
         $(button).on("click",function(){
             console.log(Lingo.data[Lingo.current].phrase_de+ " "+ textField.val());
-            if(textField.val()==Lingo.data[Lingo.current].phrase_de){
-                Lingo.correct+=1;
+            if(Lingo.translationType==0){
+                if(textField.val()==Lingo.data[Lingo.current].phrase_de){
+                    Lingo.correct+=1;
+                }
+            } else {
+                if(textField.val()==Lingo.data[Lingo.current].phrase_en){
+                    Lingo.correct+=1;
+                }
             }
             $("#"+Lingo.current).removeClass("current");
             Lingo.current++;
